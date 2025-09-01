@@ -4,8 +4,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Configuration
-const BOT_TOKEN = process.env.BOT_TOKEN; // Use env variable
-const CHANNEL_ID = process.env.CHANNEL_ID; // Use env variable
+const BOT_TOKEN = 'MTM4Mjk1NDg3NjE4MjcyNDcxMA.GLnzSB.ebajdVIpM8fehvJ-R5H87RioakgZjSocgmkyRE'; // Replace with your bot token
+const CHANNEL_ID = '1399769153635614824'; // Replace with your channel ID
 
 // In-memory command store
 let latestCommand = '';
